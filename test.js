@@ -111,3 +111,41 @@ class son5 extends father5 {
     }
 }
 // console.log(new son5().consoleA()) // 555
+
+
+
+
+
+
+// 函数柯里化
+// 把一个包含多个参数的函数，拆分成多个只有一个参数的函数，用于创建高度可配置的代码，以及在函数式编程中进行函数组合和重用。
+
+// ex1：
+function add (a, b, c) {
+    return a + b + c;
+}
+
+function addCurry (a) {
+    return function(b) {
+        return function(c) {
+            return a + b + c;
+        }
+    }
+}
+
+// ex2: 实现累加函数
+// curryFn(1)(2)(3); // 6
+// curryFn(1, 2)(3); // 6
+// curryFn(1, 2, 3); // 6
+
+// 思路： 可以多次调用，首先外层函数的参数就是一个函数, 其次由于要多次调用，返回值是一个函数
+function curryFn (add) {
+    return function curried(...args) {
+        if (args.length >= add.length) {
+            return add.apply(this, args);
+        }
+        return function (...args2) {
+            return curried.apply(this, args.concat(args2))
+        }
+    }
+}

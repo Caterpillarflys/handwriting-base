@@ -68,7 +68,7 @@ function myThis () {
 
     showThis(); // 输出：Window
     showThis.myCall(obj1); // 输出：{ name: 'obj1' }
-    showThis.myApply(obj1); // 输出：{ name: 'obj2' }
+    showThis.myApply(obj1, []); // 输出：{ name: 'obj2' }
     showThis.myBind(obj1)(); // 输出：{ name: 'obj1' }
 
 

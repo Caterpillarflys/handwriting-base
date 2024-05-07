@@ -4,15 +4,22 @@ function myInHerit () {
     function prototypeInHerit () {
         let son = function () {};
         let father = function  ()  {
-            // this.hobby = () => {
-            //     console.log('father 1');
-            // }
+            this.hobby = () => {
+                console.log('father 1');
+            }
     
-            return {
-                hobby: () => {
-                    console.log('father 1');
-                }
-            };
+            // return {
+            //     hobby: () => {
+            //         console.log('father 1');
+            //     }
+            // };
+
+            // 这里有个坑
+            // 当你执行new father()时，你实际上得到的是father函数返回的那个对象，而不是一个带有father原型链上方法的新对象。如果father中return新对象，
+            // 那就继承不了挂在father的prototype的hobby2方法
+            // 因此，hobby2方法并没有被继承，因为它是直接添加到father.prototype上的，而不是返回的对象的原型上。
+
+            // 这就是为什么console.log( (new son()).hobby2());会报错的原因。hobby2方法不在son实例的原型链上。
         }
 
         father.prototype.hobby2 = () => {
@@ -23,7 +30,7 @@ function myInHerit () {
         son.prototype.constructor = son;
     
         console.log( (new son()).hobby()); // father 1
-        console.log( (new son()).hobby2()); // 111
+        console.log( (new son()).hobby2()); // 111， 如果father有return，那么这里会报错
     };
     prototypeInHerit();
 
@@ -116,8 +123,7 @@ function myInHerit () {
         }
 
         let newSon = new son('Rex');
-        newSon.speak(); // 222, Rex
-        newSon.speak2(); // 333, Rex
+        newSon.speak(); // 333, Rex
     };
     classInherit();
 

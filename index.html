@@ -11,41 +11,54 @@
 </body>
 </html>
 
-<script src="this.js"></script>
-<script src="instanceof.js"></script>
-<script src="inherit.js"></script>
-
 <script>
-    var container = document.getElementById('container');
+    var scripts = ['this.js', 'instanceof.js', 'inherit.js', 'curry.js'];
 
-    var data = [
-        {
-            title: '测试this',
-            action: myThis
-        },
-        {
-            title: '测试instanceof',
-            action: myInstanceof  
-        },
-        {
-            tilte: '测试继承',
-            action: myInHerit
-        }
-    ];
-
-    for (var i = 0; i < data.length; i++) {
-        (function(index) {
-            var newDiv = document.createElement('button');
-        
-            newDiv.innerHTML = data[index].title;
-            
-            container.appendChild(newDiv);
-
-            newDiv.onclick = function() {
-                data[index].action && data[index].action();
-            };
-        })(i)
+    function loadScript(src) {
+        return new Promise(function(resolve, reject) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+        });
     }
+
+    // 等所有js文件加载完，再执行其他操作
+    Promise.all(scripts.map(loadScript)).then(function() {
+        var container = document.getElementById('container');
+        var data = [
+            {
+                title: '测试this',
+                action: myThis
+            },
+            {
+                title: '测试instanceof',
+                action: myInstanceof  
+            },
+            {
+                title: '测试继承',
+                action: myInHerit
+            },
+            {
+                title: '测试函数柯里化',
+                action: fnCurry
+            }
+        ];
+
+        for (var i = 0; i < data.length; i++) {
+            (function(index) {
+                var newDiv = document.createElement('button');
+                newDiv.innerHTML = data[index].title;
+                container.appendChild(newDiv);
+                newDiv.onclick = function() {
+                    data[index].action && data[index].action();
+                };
+            })(i)
+        }
+    }).catch(function(error) {
+        console.error("Script loading failed: ", error);
+    });
 </script>
 <style>
     #container button {
