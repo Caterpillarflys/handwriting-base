@@ -91,7 +91,7 @@ function father4 () {
 function son4() {
     father4.call(this)
 }
-son4.prototype = Object.create(father4)
+son4.prototype = Object.create(father4.prototype)
 son4.prototype.constructor = son4;
 // console.log(new son4().a) //444
 
