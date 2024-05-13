@@ -132,58 +132,80 @@ function myInHerit() {
 
 
     // 手写JS的new原理：new关键字用于创建一个新对象，它会将构造函数与新对象关联起来，并将新对象作为this关键字传递给构造函数，最后返回这个新对象。
-    // Object.create的原理：Object.create方法创建一个新对象，新对象的原型链指向传入的参数对象。
+    // Object.create的原理：Object.create方法创建一个新对象，新对象的原型链指向传入的参数对象。核心原理就是原型继承
 
     // 手写Object.create
+    // 定义一个函数 myObjectCreate，接收一个参数 p
     function myObjectCreate(p) {
 
-        if (p == null) throw TypeError();
+        // // 如果参数 p 是 null，则抛出一个类型错误异常
+        // if (p == null) throw TypeError();
 
-        var t = typeof p;
+        // // 获取参数 p 的类型
+        // var t = typeof p;
 
-        if (t !== 'object' && t !== 'function') throw TypeError();
+        // // 如果 p 的类型既不是 'object' 也不是 'function'，则抛出一个类型错误异常
+        // if (t !== 'object' && t !== 'function') throw TypeError();
 
-        // - 返回了一个对象；
-        // - 这个对象的原型，指向了这个函数 Function 的 prototype
+        // 定义一个空函数 F
         function F() { };
 
+        // 将函数 F 的原型指向参数 p
         F.prototype = p;
 
+        // 创建一个 F 的实例，这个实例的原型链上会有参数 p
         return new F();
     }
 
     // 手写一个new
     function myNew(fn, ...args) {
 
+        // 需要前置判断fn是否是函数，不是函数就抛出错误； 判断有无args
+
         // 创建一个空对象，并将其原型指向构造函数的原型
         const obj = Object.create(fn.prototype);
 
-        // 将构造函数的作用域赋给新对象
+        // 将构造函数的作用域赋给新对象（获取构造函数返回结果）
         const result = fn.apply(obj, args);
 
         // 如果构造函数返回一个对象，则返回该对象；否则，返回新创建的对象
+        // 这是因为在 JavaScript 中，如果构造函数显式返回一个对象（使用return返回一个对象），那么这个对象将作为 new 操作的结果返回。
         return (typeof result === 'object' && result !== null) ? result : obj;
     }
 
-    // 定义一个父类
-    function Animal(name) {
-        this.name = name;
-    }
+//     在JavaScript中，函数的返回值取决于函数体内的return语句。如果函数没有return语句，或者return后面没有任何表达式，则函数返回undefined。
 
-    // 定义一个子类
-    function Dog(name, breed) {
-        Animal.call(this, name);
-        this.breed = breed;
-    }
+    // 根据您提供的代码，我们可以分别分析这三个函数：
 
-    // 使用手写的Object.create创建一个新对象，并将其原型指向Animal.prototype
-    const myDog = myObjectCreate(Animal.prototype);
-    console.log(myDog); // {}
+    // function a() {}
+    // 这个函数a没有return语句，所以它的返回值是undefined。
 
-    // 使用手写的new创建一个Dog实例
-    const myNewDog = myNew(Dog, "Max", "Labrador");
-    console.log(myNewDog); // Dog { name: 'Max', breed: 'Labrador' }
-    console.log(myNewDog instanceof Dog); // true
-    console.log(myNewDog instanceof Animal); // true
+    // function b() { this.ccc = 111 }
+    // 这个函数b同样没有return语句，它在函数体内给this对象添加了一个属性ccc并赋值为111。如果这个函数作为构造函数使用（即通过new b()来调用），那么它会返回一个新对象，这个新对象将拥有一个名为ccc的属性，值为111。如果函数不是作为构造函数调用，那么this的值取决于调用上下文，但函数的返回值仍然是undefined。
 
+    // function c() { return { ccc: 222 } }
+    // 这个函数c有一个return语句，它返回一个对象字面量{ ccc: 222 }。所以这个函数的返回值是一个对象，这个对象有一个属性ccc，其值为222。
+
+
+
+
+    let a = {}; // a是一个普通对象，其[[Prototype]]是Object.prototype
+
+    let b = Object.create(a); // b的[[Prototype]]是a，因此b有两层[[Prototype]]
+
+    let c = Object.create(b); // c的[[Prototype]]是b，因此c有三层[[Prototype]]
+
+
+    // 为什么Object.create(a.__proto__)只有一层[[Prototype]]
+    // 由于a是一个普通对象，a.__proto__实际上就是Object.prototype，这是大多数对象的默认原型。
+
+    // 因此，Object.create(a.__proto__)创建的新对象直接继承自Object.prototype，它只有一层[[Prototype]]。
+
+
+
+
+
+
+
+    
 };
